@@ -42,8 +42,16 @@ const MyCoursesPage = () => {
             <Link key={course._id} to={`/courses/${course._id}`}>
               <Card className="hover:shadow-md transition-shadow">
                 <CardContent className="flex gap-4 items-center py-4">
-                  <div className="w-14 h-14 bg-violet-50 rounded-lg flex items-center justify-center text-2xl shrink-0">
-                    📚
+                  <div className="w-14 h-14 bg-violet-50 rounded-lg flex items-center justify-center text-2xl shrink-0 overflow-hidden">
+                    {course.thumbnail ? (
+                      <img
+                        src={course.thumbnail}
+                        alt={course.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span>📚</span>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 truncate">

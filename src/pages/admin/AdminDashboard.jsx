@@ -22,6 +22,7 @@ import {
   ADMIN_TABS,
   ADMIN_USERS_PAGE_LIMIT,
 } from "../../constants";
+import { useAuth } from "../../context/AuthContext";
 
 const AdminDashboard = () => {
   const [tab, setTab] = useState(ADMIN_TABS[0]);
@@ -63,6 +64,7 @@ const AdminDashboard = () => {
 /* ─── Users Tab ─────────────────────────────────────────────── */
 const UsersTab = () => {
   const confirm = useConfirm();
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -171,52 +173,66 @@ const UsersTab = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {users.map((user) => (
-                    <tr
-                      key={user._id}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-5 py-3 font-medium text-gray-900">
-                        {user.name}
-                      </td>
-                      <td className="px-5 py-3 text-gray-500">{user.email}</td>
-                      <td className="px-5 py-3">
-                        <Badge
-                          variant={ROLE_BADGE_VARIANT[user.role] || "secondary"}
-                        >
-                          {user.role}
-                        </Badge>
-                      </td>
-                      <td className="px-5 py-3">
-                        <select
-                          value={user.role}
-                          onChange={(e) =>
-                            handleRoleChange(user._id, e.target.value)
-                          }
-                          className="flex h-8 rounded-md border border-gray-300 bg-white px-2 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
-                        >
-                          {ALL_ROLES.map((r) => (
-                            <option key={r} value={r}>
-                              {r}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="px-5 py-3 text-gray-400">
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-5 py-3 text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(user._id, user.name)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50 h-7 w-7"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                  {users.map((user) => {
+                    const isSelf = user._id === currentUser?._id;
+                    return (
+                      <tr
+                        key={user._id}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-5 py-3 font-medium text-gray-900">
+                          {user.name}
+                          {isSelf && (
+                            <span className="ml-2 text-xs text-violet-500 font-normal">
+                              (you)
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3 text-gray-500">
+                          {user.email}
+                        </td>
+                        <td className="px-5 py-3">
+                          <Badge
+                            variant={
+                              ROLE_BADGE_VARIANT[user.role] || "secondary"
+                            }
+                          >
+                            {user.role}
+                          </Badge>
+                        </td>
+                        <td className="px-5 py-3">
+                          <select
+                            value={user.role}
+                            disabled={isSelf}
+                            onChange={(e) =>
+                              handleRoleChange(user._id, e.target.value)
+                            }
+                            className="flex h-8 rounded-md border border-gray-300 bg-white px-2 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:opacity-40 disabled:cursor-not-allowed"
+                          >
+                            {ALL_ROLES.map((r) => (
+                              <option key={r} value={r}>
+                                {r}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-5 py-3 text-gray-400">
+                          {new Date(user.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="px-5 py-3 text-right">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            disabled={isSelf}
+                            onClick={() => handleDelete(user._id, user.name)}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 h-7 w-7 disabled:opacity-40 disabled:cursor-not-allowed"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

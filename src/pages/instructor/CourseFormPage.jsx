@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Loader2, ImagePlus } from "lucide-react";
+import { Loader2, ImagePlus, X } from "lucide-react";
 import api from "../../api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -189,9 +189,14 @@ const CourseFormPage = () => {
               {form.thumbnail && (
                 <button
                   type="button"
-                  onClick={() => setForm((f) => ({ ...f, thumbnail: "" }))}
-                  className="text-xs text-red-500 hover:underline self-start"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setForm((f) => ({ ...f, thumbnail: "" }));
+                    if (thumbInputRef.current) thumbInputRef.current.value = "";
+                  }}
+                  className="flex items-center gap-1.5 self-start px-3 py-1.5 rounded-md text-xs font-medium text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 hover:border-red-300 transition-colors"
                 >
+                  <X className="w-3 h-3" />
                   Remove thumbnail
                 </button>
               )}
