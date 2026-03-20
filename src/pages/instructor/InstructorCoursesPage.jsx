@@ -7,6 +7,7 @@ import { useConfirm } from "@/components/ui/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { COURSE_STATUS_BADGE_VARIANT } from "../../constants";
 
 const InstructorCoursesPage = () => {
   const confirm = useConfirm();
@@ -83,12 +84,21 @@ const InstructorCoursesPage = () => {
                   <h3 className="font-semibold text-gray-900 truncate">
                     {course.title}
                   </h3>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
                     {course.category && (
                       <Badge variant="secondary" className="text-xs">
                         {course.category}
                       </Badge>
                     )}
+                    <Badge
+                      variant={
+                        COURSE_STATUS_BADGE_VARIANT[course.status] ||
+                        "secondary"
+                      }
+                      className="text-xs capitalize"
+                    >
+                      {course.status}
+                    </Badge>
                     <span className="text-xs text-gray-500">
                       {course.price === 0 ? "Free" : `$${course.price}`}
                     </span>

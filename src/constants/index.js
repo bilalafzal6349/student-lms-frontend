@@ -39,7 +39,26 @@ export const API_ROUTES = Object.freeze({
 });
 
 /** Admin dashboard tab labels */
-export const ADMIN_TABS = Object.freeze(["Users", "Courses", "Analytics"]);
+export const ADMIN_TABS = Object.freeze([
+  "Users",
+  "Courses",
+  "Requests",
+  "Analytics",
+]);
+
+/** Course approval statuses */
+export const COURSE_STATUS = Object.freeze({
+  PENDING: "pending",
+  APPROVED: "approved",
+  REJECTED: "rejected",
+});
+
+/** Badge variant per course status */
+export const COURSE_STATUS_BADGE_VARIANT = Object.freeze({
+  pending: "warning",
+  approved: "success",
+  rejected: "destructive",
+});
 
 /** Roles available for admin role-change select */
 export const ALL_ROLES = Object.freeze([

@@ -8,6 +8,8 @@ import {
   TrendingUp,
   BarChart2,
   Star,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import api from "../../api/axios";
 import Spinner from "../../components/Spinner";
@@ -21,6 +23,7 @@ import {
   ALL_ROLES,
   ADMIN_TABS,
   ADMIN_USERS_PAGE_LIMIT,
+  COURSE_STATUS_BADGE_VARIANT,
 } from "../../constants";
 import { useAuth } from "../../context/AuthContext";
 
@@ -56,7 +59,8 @@ const AdminDashboard = () => {
 
       {tab === ADMIN_TABS[0] && <UsersTab />}
       {tab === ADMIN_TABS[1] && <CoursesTab />}
-      {tab === ADMIN_TABS[2] && <AnalyticsTab />}
+      {tab === ADMIN_TABS[2] && <RequestsTab />}
+      {tab === ADMIN_TABS[3] && <AnalyticsTab />}
     </div>
   );
 };
@@ -281,7 +285,7 @@ const CoursesTab = () => {
   const fetchCourses = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get("/courses", {
+      const { data } = await api.get("/courses/admin/all", {
         params: { page, limit: ADMIN_USERS_PAGE_LIMIT },
       });
       setCourses(data.courses);
@@ -326,6 +330,7 @@ const CoursesTab = () => {
                   <th className="px-5 py-3 text-left">Title</th>
                   <th className="px-5 py-3 text-left">Instructor</th>
                   <th className="px-5 py-3 text-left">Category</th>
+                  <th className="px-5 py-3 text-left">Status</th>
                   <th className="px-5 py-3 text-left">Price</th>
                   <th className="px-5 py-3 text-left">Rating</th>
                   <th className="px-5 py-3" />
@@ -347,6 +352,17 @@ const CoursesTab = () => {
                       {course.category && (
                         <Badge variant="secondary">{course.category}</Badge>
                       )}
+                    </td>
+                    <td className="px-5 py-3">
+                      <Badge
+                        variant={
+                          COURSE_STATUS_BADGE_VARIANT[course.status] ||
+                          "secondary"
+                        }
+                        className="capitalize"
+                      >
+                        {course.status}
+                      </Badge>
                     </td>
                     <td className="px-5 py-3 text-gray-700">
                       {course.price === 0 ? "Free" : `$${course.price}`}
@@ -396,6 +412,122 @@ const CoursesTab = () => {
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+/* ─── Requests Tab ───────────────────────────────────────────── */
+const RequestsTab = () => {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchPending = async () => {
+    setLoading(true);
+    try {
+      const { data } = await api.get("/courses/pending");
+      setCourses(data.courses);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPending();
+  }, []);
+
+  const handleStatus = async (id, status) => {
+    try {
+      const { data } = await api.patch(`/courses/${id}/status`, { status });
+      setCourses((prev) =>
+        prev
+          .map((c) => (c._id === id ? data.course : c))
+          .filter((c) => c.status === "pending"),
+      );
+    } catch (err) {
+      alert(err.response?.data?.error || "Action failed");
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader className="border-b border-gray-100 pb-4">
+        <CardTitle className="text-base">Pending Course Requests</CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        {loading ? (
+          <Spinner />
+        ) : courses.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-2 text-gray-400">
+            <CheckCircle className="w-8 h-8" />
+            <p className="text-sm">No pending requests</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
+                <tr>
+                  <th className="px-5 py-3 text-left">Title</th>
+                  <th className="px-5 py-3 text-left">Instructor</th>
+                  <th className="px-5 py-3 text-left">Category</th>
+                  <th className="px-5 py-3 text-left">Price</th>
+                  <th className="px-5 py-3 text-left">Submitted</th>
+                  <th className="px-5 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {courses.map((course) => (
+                  <tr
+                    key={course._id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-5 py-3 font-medium text-gray-900 max-w-xs truncate">
+                      {course.title}
+                    </td>
+                    <td className="px-5 py-3 text-gray-500">
+                      {course.instructor?.name || "—"}
+                    </td>
+                    <td className="px-5 py-3">
+                      {course.category ? (
+                        <Badge variant="secondary">{course.category}</Badge>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td className="px-5 py-3 text-gray-700">
+                      {course.price === 0 ? "Free" : `$${course.price}`}
+                    </td>
+                    <td className="px-5 py-3 text-gray-400">
+                      {new Date(course.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700 gap-1"
+                          onClick={() => handleStatus(course._id, "approved")}
+                        >
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-700 gap-1"
+                          onClick={() => handleStatus(course._id, "rejected")}
+                        >
+                          <XCircle className="w-3.5 h-3.5" />
+                          Reject
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </CardContent>
@@ -465,7 +597,6 @@ const AnalyticsTab = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {statCards.map(({ label, value, icon, color }) => (
           <Card key={label}>
@@ -482,7 +613,6 @@ const AnalyticsTab = () => {
         ))}
       </div>
 
-      {/* Top courses */}
       <Card>
         <CardHeader className="border-b border-gray-100 pb-4">
           <CardTitle className="text-base flex items-center gap-2">
