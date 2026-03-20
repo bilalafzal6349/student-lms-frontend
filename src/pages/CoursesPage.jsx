@@ -6,16 +6,7 @@ import Spinner from "../components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-
-const CATEGORIES = [
-  "",
-  "Math",
-  "Science",
-  "Programming",
-  "Design",
-  "Business",
-  "Language",
-];
+import { COURSE_CATEGORIES, COURSES_PAGE_LIMIT } from "../constants";
 
 /**
  * Public course catalog with search, category filter, and pagination.
@@ -32,7 +23,7 @@ const CoursesPage = () => {
   const fetchCourses = async () => {
     setLoading(true);
     try {
-      const params = { page, limit: 12 };
+      const params = { page, limit: COURSES_PAGE_LIMIT };
       if (search) params.search = search;
       if (category) params.category = category;
       const { data } = await api.get("/courses", { params });
@@ -87,7 +78,7 @@ const CoursesPage = () => {
           }}
           className="flex h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
         >
-          {CATEGORIES.map((c) => (
+          {["", ...COURSE_CATEGORIES].map((c) => (
             <option key={c} value={c}>
               {c || "All Categories"}
             </option>
@@ -97,7 +88,7 @@ const CoursesPage = () => {
 
       {/* Category pills */}
       <div className="flex gap-2 flex-wrap mb-8">
-        {CATEGORIES.map((c) => (
+        {["", ...COURSE_CATEGORIES].map((c) => (
           <button
             key={c}
             onClick={() => {

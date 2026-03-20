@@ -14,16 +14,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { ROLES, MIN_PASSWORD_LENGTH } from "../constants";
 
 const ROLE_OPTIONS = [
   {
-    value: "student",
+    value: ROLES.STUDENT,
     label: "Student",
     description: "I want to learn and enroll in courses",
     Icon: GraduationCap,
   },
   {
-    value: "instructor",
+    value: ROLES.INSTRUCTOR,
     label: "Instructor",
     description: "I want to create and sell courses",
     Icon: BookOpenCheck,
@@ -37,7 +38,7 @@ const RegisterPage = () => {
     name: "",
     email: "",
     password: "",
-    role: "student",
+    role: ROLES.STUDENT,
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -156,8 +157,8 @@ const RegisterPage = () => {
                   value={form.password}
                   onChange={handleChange}
                   required
-                  minLength={6}
-                  placeholder="Min. 6 characters"
+                  minLength={MIN_PASSWORD_LENGTH}
+                  placeholder={`Min. ${MIN_PASSWORD_LENGTH} characters`}
                 />
               </div>
               <Button type="submit" disabled={loading} className="w-full">
@@ -167,7 +168,7 @@ const RegisterPage = () => {
                     account...
                   </>
                 ) : (
-                  `Sign up as ${form.role === "instructor" ? "Instructor" : "Student"}`
+                  `Sign up as ${form.role === ROLES.INSTRUCTOR ? "Instructor" : "Student"}`
                 )}
               </Button>
             </form>

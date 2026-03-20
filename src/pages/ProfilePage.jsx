@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Loader2, User } from "lucide-react";
+import { useState, useRef } from "react";
+import { Loader2, User, Camera } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 import { Button } from "@/components/ui/button";
@@ -7,20 +7,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
-const roleBadgeVariant = {
-  admin: "destructive",
-  instructor: "info",
-  student: "success",
-};
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { ROLE_BADGE_VARIANT } from "../constants";
 
 /**
  * Student (and all roles) profile page.
  * Allows updating name, bio, and password.
  */
 const ProfilePage = () => {
-  const { user, login } = useAuth();
+  const { user, updateUser } = useAuth();
+  const fileInputRef = useRef(null);
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar || "");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [form, setForm] = useState({
     name: user?.name || "",
     bio: user?.bio || "",
@@ -45,6 +43,25 @@ const ProfilePage = () => {
         .slice(0, 2)
     : "?";
 
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const { data } = await api.post("/upload/avatar", formData);
+      setAvatarUrl(data.url);
+      // Save avatar URL to profile
+      await api.put(`/users/${user._id}`, { avatar: data.url });
+      updateUser({ avatar: data.url });
+    } catch (err) {
+      setProfileErr(err.response?.data?.error || "Avatar upload failed");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const handleProfileSave = async (e) => {
     e.preventDefault();
     setProfileErr("");
@@ -52,9 +69,7 @@ const ProfilePage = () => {
     setSaving(true);
     try {
       await api.put(`/users/${user._id}`, { name: form.name, bio: form.bio });
-      // Update localStorage so Navbar reflects new name
-      const updated = { ...user, name: form.name, bio: form.bio };
-      localStorage.setItem("user", JSON.stringify(updated));
+      updateUser({ name: form.name, bio: form.bio });
       setProfileMsg("Profile updated successfully.");
     } catch (err) {
       setProfileErr(err.response?.data?.error || "Failed to update profile");
@@ -90,13 +105,34 @@ const ProfilePage = () => {
       {/* Avatar + role */}
       <Card className="mb-6">
         <CardContent className="flex items-center gap-5 pt-6">
-          <Avatar className="h-16 w-16 text-xl">
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="h-16 w-16 text-xl">
+              <AvatarImage src={avatarUrl} alt={user?.name} />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              className="absolute -bottom-1 -right-1 w-6 h-6 bg-violet-600 rounded-full flex items-center justify-center text-white hover:bg-violet-700 transition-colors"
+            >
+              {uploadingAvatar ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Camera className="w-3 h-3" />
+              )}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
+          </div>
           <div>
             <p className="text-lg font-semibold text-gray-900">{user?.name}</p>
             <p className="text-sm text-gray-500 mb-2">{user?.email}</p>
-            <Badge variant={roleBadgeVariant[user?.role] || "secondary"}>
+            <Badge variant={ROLE_BADGE_VARIANT[user?.role] || "secondary"}>
               {user?.role}
             </Badge>
           </div>

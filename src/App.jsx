@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ConfirmProvider } from "./components/ui/confirm-dialog";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import { ROLES } from "./constants";
 
 import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
@@ -37,7 +38,9 @@ const App = () => (
           <Route
             path="/profile"
             element={
-              <ProtectedRoute roles={["student", "instructor", "admin"]}>
+              <ProtectedRoute
+                roles={[ROLES.STUDENT, ROLES.INSTRUCTOR, ROLES.ADMIN]}
+              >
                 <ProfilePage />
               </ProtectedRoute>
             }
@@ -47,7 +50,7 @@ const App = () => (
           <Route
             path="/my-courses"
             element={
-              <ProtectedRoute roles={["student"]}>
+              <ProtectedRoute roles={[ROLES.STUDENT]}>
                 <MyCoursesPage />
               </ProtectedRoute>
             }
@@ -57,7 +60,7 @@ const App = () => (
           <Route
             path="/instructor/courses"
             element={
-              <ProtectedRoute roles={["instructor"]}>
+              <ProtectedRoute roles={[ROLES.INSTRUCTOR]}>
                 <InstructorCoursesPage />
               </ProtectedRoute>
             }
@@ -65,7 +68,7 @@ const App = () => (
           <Route
             path="/instructor/courses/new"
             element={
-              <ProtectedRoute roles={["instructor"]}>
+              <ProtectedRoute roles={[ROLES.INSTRUCTOR]}>
                 <CourseFormPage />
               </ProtectedRoute>
             }
@@ -73,7 +76,7 @@ const App = () => (
           <Route
             path="/instructor/courses/:id/edit"
             element={
-              <ProtectedRoute roles={["instructor"]}>
+              <ProtectedRoute roles={[ROLES.INSTRUCTOR]}>
                 <CourseFormPage />
               </ProtectedRoute>
             }
@@ -81,7 +84,7 @@ const App = () => (
           <Route
             path="/instructor/courses/:id/lessons"
             element={
-              <ProtectedRoute roles={["instructor"]}>
+              <ProtectedRoute roles={[ROLES.INSTRUCTOR]}>
                 <LessonsPage />
               </ProtectedRoute>
             }
@@ -91,7 +94,7 @@ const App = () => (
           <Route
             path="/admin"
             element={
-              <ProtectedRoute roles={["admin"]}>
+              <ProtectedRoute roles={[ROLES.ADMIN]}>
                 <AdminDashboard />
               </ProtectedRoute>
             }

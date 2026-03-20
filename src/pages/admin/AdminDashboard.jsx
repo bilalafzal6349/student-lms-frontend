@@ -16,17 +16,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-const ROLES = ["student", "instructor", "admin"];
-const roleBadgeVariant = {
-  admin: "destructive",
-  instructor: "info",
-  student: "success",
-};
-const TABS = ["Users", "Courses", "Analytics"];
+import {
+  ROLE_BADGE_VARIANT,
+  ALL_ROLES,
+  ADMIN_TABS,
+  ADMIN_USERS_PAGE_LIMIT,
+} from "../../constants";
 
 const AdminDashboard = () => {
-  const [tab, setTab] = useState("Users");
+  const [tab, setTab] = useState(ADMIN_TABS[0]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -39,7 +37,7 @@ const AdminDashboard = () => {
 
       {/* Tab bar */}
       <div className="flex gap-1 border-b border-gray-200 mb-6">
-        {TABS.map((t) => (
+        {ADMIN_TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -55,9 +53,9 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {tab === "Users" && <UsersTab />}
-      {tab === "Courses" && <CoursesTab />}
-      {tab === "Analytics" && <AnalyticsTab />}
+      {tab === ADMIN_TABS[0] && <UsersTab />}
+      {tab === ADMIN_TABS[1] && <CoursesTab />}
+      {tab === ADMIN_TABS[2] && <AnalyticsTab />}
     </div>
   );
 };
@@ -74,7 +72,9 @@ const UsersTab = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get("/users", { params: { page, limit: 15 } });
+      const { data } = await api.get("/users", {
+        params: { page, limit: ADMIN_USERS_PAGE_LIMIT },
+      });
       setUsers(data.users);
       setTotalPages(data.totalPages);
       setTotal(data.total);
@@ -182,7 +182,7 @@ const UsersTab = () => {
                       <td className="px-5 py-3 text-gray-500">{user.email}</td>
                       <td className="px-5 py-3">
                         <Badge
-                          variant={roleBadgeVariant[user.role] || "secondary"}
+                          variant={ROLE_BADGE_VARIANT[user.role] || "secondary"}
                         >
                           {user.role}
                         </Badge>
@@ -195,7 +195,7 @@ const UsersTab = () => {
                           }
                           className="flex h-8 rounded-md border border-gray-300 bg-white px-2 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
                         >
-                          {ROLES.map((r) => (
+                          {ALL_ROLES.map((r) => (
                             <option key={r} value={r}>
                               {r}
                             </option>
@@ -266,7 +266,7 @@ const CoursesTab = () => {
     setLoading(true);
     try {
       const { data } = await api.get("/courses", {
-        params: { page, limit: 15 },
+        params: { page, limit: ADMIN_USERS_PAGE_LIMIT },
       });
       setCourses(data.courses);
       setTotalPages(data.totalPages);

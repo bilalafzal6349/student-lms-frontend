@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -29,12 +29,7 @@ import {
   SheetTitle,
   SheetClose,
 } from "@/components/ui/sheet";
-
-const roleBadgeVariant = {
-  admin: "destructive",
-  instructor: "info",
-  student: "success",
-};
+import { ROLES, ROLE_BADGE_VARIANT } from "../constants";
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -57,11 +52,11 @@ const Navbar = () => {
   // Role-based nav link
   const roleLink =
     isAuthenticated &&
-    (user?.role === "student"
+    (user?.role === ROLES.STUDENT
       ? { to: "/my-courses", label: "My Learning", Icon: GraduationCap }
-      : user?.role === "instructor"
+      : user?.role === ROLES.INSTRUCTOR
         ? { to: "/instructor/courses", label: "My Courses", Icon: BookOpen }
-        : user?.role === "admin"
+        : user?.role === ROLES.ADMIN
           ? { to: "/admin", label: "Dashboard", Icon: LayoutDashboard }
           : null);
 
@@ -105,6 +100,7 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 ml-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500">
                     <Avatar className="h-8 w-8">
+                      <AvatarImage src={user?.avatar} alt={user?.name} />
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                     <ChevronDown className="w-3 h-3 text-gray-400" />
@@ -119,7 +115,7 @@ const Navbar = () => {
                       {user?.email}
                     </span>
                     <Badge
-                      variant={roleBadgeVariant[user?.role] || "secondary"}
+                      variant={ROLE_BADGE_VARIANT[user?.role] || "secondary"}
                       className="w-fit mt-1"
                     >
                       {user?.role}
@@ -157,6 +153,7 @@ const Navbar = () => {
         <div className="flex md:hidden items-center gap-2">
           {isAuthenticated && (
             <Avatar className="h-8 w-8">
+              <AvatarImage src={user?.avatar} alt={user?.name} />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
           )}
@@ -178,6 +175,7 @@ const Navbar = () => {
                 {isAuthenticated && (
                   <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-xl">
                     <Avatar className="h-10 w-10">
+                      <AvatarImage src={user?.avatar} alt={user?.name} />
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col min-w-0">
@@ -188,7 +186,7 @@ const Navbar = () => {
                         {user?.email}
                       </span>
                       <Badge
-                        variant={roleBadgeVariant[user?.role] || "secondary"}
+                        variant={ROLE_BADGE_VARIANT[user?.role] || "secondary"}
                         className="w-fit mt-1 text-xs"
                       >
                         {user?.role}
