@@ -66,6 +66,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <img src="/logo.png" alt="LearnHub" className="h-8 w-auto" />
+          <span className="font-bold text-lg text-violet-600">LearnHub</span>
         </Link>
 
         {/* Desktop nav */}
@@ -163,6 +164,7 @@ const Navbar = () => {
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
                   <img src="/logo.png" alt="LearnHub" className="h-7 w-auto" />
+                  <span className="font-bold text-violet-600">LearnHub</span>
                 </SheetTitle>
               </SheetHeader>
 
