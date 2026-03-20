@@ -64,12 +64,8 @@ const Navbar = () => {
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-violet-600 font-bold text-lg"
-        >
-          <BookOpen className="w-5 h-5" />
-          LearnHub
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/logo.png" alt="LearnHub" className="h-8 w-auto" />
         </Link>
 
         {/* Desktop nav */}
@@ -165,8 +161,8 @@ const Navbar = () => {
             </SheetTrigger>
             <SheetContent side="right">
               <SheetHeader>
-                <SheetTitle className="flex items-center gap-2 text-violet-600">
-                  <BookOpen className="w-4 h-4" /> LearnHub
+                <SheetTitle className="flex items-center gap-2">
+                  <img src="/logo.png" alt="LearnHub" className="h-7 w-auto" />
                 </SheetTitle>
               </SheetHeader>
 

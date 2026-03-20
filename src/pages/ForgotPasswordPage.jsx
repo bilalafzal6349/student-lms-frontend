@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpen, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import api from "../api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,9 +60,8 @@ const ForgotPasswordPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="flex items-center justify-center gap-2 mb-6 text-violet-600">
-          <BookOpen className="w-6 h-6" />
-          <span className="text-xl font-bold">LearnHub</span>
+        <div className="flex items-center justify-center mb-6">
+          <img src="/logo.png" alt="LearnHub" className="h-10 w-auto" />
         </div>
 
         <Card>
