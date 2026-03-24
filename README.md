@@ -41,7 +41,7 @@ LearnHub is a full-stack Learning Management System. This repository is the **fr
 | class-variance-authority | ^0.7         | Variant-based component styling                                              |
 | clsx + tailwind-merge    | latest       | Conditional class merging (`cn()` helper)                                    |
 
-> **Note:** `@radix-ui/react-dialog` and `@radix-ui/react-toast` are intentionally excluded — they pull in `react-remove-scroll` which breaks the Vite 8 / Rolldown build. Confirm dialogs and sheets are implemented as plain React portals.
+
 
 ---
 
